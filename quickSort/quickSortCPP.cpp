@@ -27,6 +27,7 @@ void quickSort(int* subarr, int* subend) {
         G = subend;  // arr starts from 0
         // find pivoit the element in the middle of the array
         //                                                                          while (L++ < G--)
+        //                                                                          P = G;
         while (L < G) {
             L++;
             G--;
