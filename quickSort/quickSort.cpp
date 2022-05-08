@@ -15,10 +15,17 @@ void swapV(int16_t* a, int16_t* b) {
 }
 
 bool LTA(int16_t* a, int16_t* b) {
-    if (a - b < 0)
-        return true;
-    else
-        return false;
+    bool result;
+    int16_t D = (int16_t)a;
+    D = D - (int16_t)b;
+    if (D >= 0)
+        goto LTA$aGTb;
+    result = true;
+    goto LTA$return;
+LTA$aGTb:
+    result = false;
+LTA$return:
+    return result;
 }
 
 bool GTV(int16_t* a, int16_t* b) {

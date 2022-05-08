@@ -7,6 +7,7 @@
 			"command": "C:\\msys64\\mingw32\\bin\\g++.exe",
 			"args": [
 				"-fdiagnostics-color=always",
+				"-fpermissive",
 				"-g",
 				"${file}",
 				"-o",
