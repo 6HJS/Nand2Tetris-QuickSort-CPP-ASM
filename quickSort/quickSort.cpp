@@ -1,14 +1,23 @@
+#include "quickSort.hpp"
+
 #include <cstdint>
 #include <iostream>
 
-// int16_t arr[6] = {2, 3, 4, 6, 1, 5};  // R1
+int16_t arr[6] = {2, 3, 4, 6, 1, 5};  // R1
 // int16_t arr[6] = {1, 4, 20000, 22000, 1, 5};  // R1
 // int16_t arr[6] = {-22000, -20000, 1, 4, 1, 5};  // R1
-int16_t arr[6] = {22000, 1, 4, -20000, 1, 5};  // R1
+// int16_t arr[6] = {22000, 1, 4, -20000, 1, 5};  // R1
 // int16_t arr[6] = {-20000, 1, 4, 22000, 1, 5};  // R1
 int16_t sz = 6;  // R2
 
 // let R13 = a, R14 = b, R15 = return value
+
+int main(int argc, char const* argv[]) {
+    int16_t* end = arr + sz - 1;
+    quickSort(arr, end);
+    for (int16_t num : arr) std::cout << num << ", ";
+    return 0;
+}
 
 void swapV(int16_t* a, int16_t* b) {
     int16_t temp = *a;  // @a
@@ -125,33 +134,43 @@ quickSort$squeeze_break:
     P = subend;   // now the Pivoit is at arr[end]
     G--;
 
-    while (LTA(L, G)) {
-        while (LTV(L, P)) {  // find the first element larger than pivoit from left
-            L++;
-        }
-        while (GTV(G, P)) {  // find the first element smaller than pivoit from right
-            G--;
-        }
-        if (LTA(L, G)) {
-            swapV(L, G);
-            L++;
-            G--;
-        }
-    }
-    if (GTV(L, P)) {
-        swapV(L, P);
-    }
+quickSort$LoopLLTG:
+    if (!LTA(L, G))
+        goto quickSort$LoopLLTGESC;
+
+quickSort$LoopL:
+    if (!LTV(L, P))
+        goto quickSort$LoopLESC;
+    L = L + 1;
+    goto quickSort$LoopL;
+quickSort$LoopLESC:
+
+quickSort$LoopG:
+    if (!GTV(G, P))
+        goto quickSort$LoopGESC;
+    G = G - 1;
+    goto quickSort$LoopG;
+quickSort$LoopGESC:
+
+    if (!LTA(L, G))
+        goto quickSort$SkipSwapLG;
+    swapV(L, G);
+    L = L + 1;
+    G = G - 1;
+quickSort$SkipSwapLG:
+    goto quickSort$LoopLLTG;
+
+quickSort$LoopLLTGESC:
+    if (!GTV(L, P))
+        goto quickSort$Recur;
+quickSort$PutPPos:  // put pivoit into its correct position
+    swapV(L, P);
+
+quickSort$Recur:
     // now pivoit is at tis correct position and all number to its left is smaller, all number to the right is larger.
     // recursive call
     quickSort(subarr, L - 1);
     quickSort(L + 1, subend);
 quickSort$return:
     return;
-}
-
-int main(int argc, char const* argv[]) {
-    int16_t* end = arr + sz - 1;
-    quickSort(arr, end);
-    for (int16_t num : arr) std::cout << num << ", ";
-    return 0;
 }

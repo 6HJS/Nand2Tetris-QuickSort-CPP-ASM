@@ -1,7 +1,7 @@
+#include "quickSortCPP.hpp"
+
 #include <cstdlib>
 #include <iostream>
-
-#include "quickSort.hpp"
 int arr[6] = {2, 3, 4, 6, 1, 5};  // R1
 // int arr[6] = {1, 4, 20000, 22000, 1, 5};  // R1
 // int arr[6] = {-22000, -20000, 1, 4, 1, 5};  // R1
