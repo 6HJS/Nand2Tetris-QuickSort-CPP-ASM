@@ -105,44 +105,46 @@ void quickSort(int16_t* subarr, int16_t* subend) {
     int16_t* P;               // piviot
     if (subend - subarr < 1)  // return if the subarr only has one number (or none)
         goto quickSort$return;
-    else {
-        L = subarr;
-        G = subend;  // arr starts from 0
-        // find pivoit the element in the middle of the array
-        while (LTA(L, G)) {
+quickSort$SZ_GEQ_1:
+    L = subarr;
+    G = subend;  // arr starts from 0
+    // find pivoit the element in the middle of the array
+quickSort$squeeze:
+    if (!LTA(L, G))
+        goto quickSort$squeeze_break;
+    L = L + 1;
+    G = G - 1;
+    goto quickSort$squeeze;
+quickSort$squeeze_break:
+    P = G;  // select the middle element as the pivoit
+
+    // reset Lesser Greater point to the two subend of the array
+    L = subarr;
+    G = subend;   // arr starts from 0
+    swapV(P, G);  // put the pivoit out of the way, to the end
+    P = subend;   // now the Pivoit is at arr[end]
+    G--;
+
+    while (LTA(L, G)) {
+        while (LTV(L, P)) {  // find the first element larger than pivoit from left
+            L++;
+        }
+        while (GTV(G, P)) {  // find the first element smaller than pivoit from right
+            G--;
+        }
+        if (LTA(L, G)) {
+            swapV(L, G);
             L++;
             G--;
         }
-        P = G;  // select the middle element as the pivoit
-
-        // reset Lesser Greater point to the two subend of the array
-        L = subarr;
-        G = subend;   // arr starts from 0
-        swapV(P, G);  // put the pivoit out of the way, to the end
-        P = subend;   // now the Pivoit is at arr[end]
-        G--;
-
-        while (LTA(L, G)) {
-            while (LTV(L, P)) {  // find the first element larger than pivoit from left
-                L++;
-            }
-            while (GTV(G, P)) {  // find the first element smaller than pivoit from right
-                G--;
-            }
-            if (LTA(L, G)) {
-                swapV(L, G);
-                L++;
-                G--;
-            }
-        }
-        if (GTV(L, P)) {
-            swapV(L, P);
-        }
-        // now pivoit is at tis correct position and all number to its left is smaller, all number to the right is larger.
-        // recursive call
-        quickSort(subarr, L - 1);
-        quickSort(L + 1, subend);
     }
+    if (GTV(L, P)) {
+        swapV(L, P);
+    }
+    // now pivoit is at tis correct position and all number to its left is smaller, all number to the right is larger.
+    // recursive call
+    quickSort(subarr, L - 1);
+    quickSort(L + 1, subend);
 quickSort$return:
     return;
 }
