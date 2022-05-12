@@ -84,13 +84,13 @@ bool LTV(int16_t* a, int16_t* b) {
     int16_t av = *a, bv = *b;  // dereference a and b value
     uint16_t result;
     if (av < 0)
-        goto LTV$avGT0;
-    goto LTV$avLEQ0;
-LTV$avGT0:
+        goto LTV$avLT0;
+    goto LTV$avGEQ0;
+LTV$avLT0:
     if (bv < 0)
         goto LTV$compare;
     goto LTV$returnTrue;
-LTV$avLEQ0:
+LTV$avGEQ0:
     if (bv < 0)
         goto LTV$returnFalse;
     goto LTV$compare;
