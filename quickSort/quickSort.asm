@@ -68,6 +68,7 @@ A=M
 // let R10 to be return address
 
 // bool LTA(int16_t* a, int16_t* b)
+(LTA)
 @R13 
 D=M  // int16_t D = (int16_t)a;
 @R14
@@ -90,6 +91,7 @@ M=0 // result = false
 // let R10 to be return address
 
 // bool GTV(int16_t* a, int16_t* b)
+(GTV)
 @R13 // int16_t av = *a, bv = *b;
 A=M
 D=M
@@ -145,6 +147,7 @@ M=0
 // let R10 to be return address
 
 // bool LTV(int16_t* a, int16_t* b)
+(LTV)
 @R13 // int16_t av = *a, bv = *b;
 A=M
 D=M
@@ -197,7 +200,7 @@ M=0
 
 // quickSort recursive call.
 // void quickSort(int16_t* subarr, int16_t* subend)
-
+(quickSort)
 // apply new space in Stakc to store local variables
 // L,G,P
 @SP
@@ -231,20 +234,289 @@ D=D-1 // (subend - subarr < 1)
 @quickSort$return
 D;JLT
 
+(quickSort$SZ_GEQ_1)
+@ARG
+A=M // address of subarr
+D=M
+@LCL // L = subarr;
+A=M
+M=D
+
+@ARG
+A=M+1 // address of subarr
+D=M
+@LCL // G = subend;
+A=M+1
+M=D
+
+(quickSort$squeeze)
+// call LTA(L,G)
+@LCL
+A=M
+D=M
+@R13
+M=D // put L into R13
+
+@LCL
+A=M+1
+D=M
+@R14
+M=D // put G into R14
+@quickSort$LTARTAddr
+D=A
+@R10
+M=D // put return address into R10
+@LTA
+(quickSort$LTARTAddr)
+@R15 // take the return value
+D=!M // !LTA(L, G)
+@quickSort$squeeze_break
+D;JEQ
+
+@LCL
+A=M
+M=M+1 // L = L + 1;
+@LCL
+A=M+1
+M=M-1 // G = G - 1;
+@quickSort$squeeze
+0;JMP
+
+(quickSort$squeeze_break)
+@LCL
+A=M+1 // G
+D=M
+@LCL
+A=M+1
+A=A+1
+M=D // P = G;
+
+@ARG
+A=M // address of subarr
+D=M
+@LCL // L = subarr;
+A=M
+M=D
+
+@ARG
+A=M+1 // address of subarr
+D=M
+@LCL // G = subend;
+A=M+1
+M=D
 
 
+// call swapV(P, G) #133
+@LCL
+A=M+1
+A=A+1
+D=M // P
+@R13
+M=D
+
+@LCL
+A=M+1
+D=M // G
+@R14
+M=D
+
+@quickSort$swapVPGRTA
+D=A
+@R10
+M=D // return address in R10
+
+@swapV
+0;JMP
+
+(quickSort$swapVPGRTA)
+
+@ARG
+A=M+1 // address of subarr
+D=M
+@LCL // P = subend;
+A=M+1
+A=A+1
+M=D
+
+@LCL
+A=M+1
+M=M-1 // G = G - 1;
+
+(quickSort$LoopLLTG)
+// call LTA(L,G)
+@LCL
+A=M
+D=M
+@R13
+M=D // put L into R13
+
+@LCL
+A=M+1
+D=M
+@R14
+M=D // put G into R14
+@quickSort$LTARTAddr2
+D=A
+@R10
+M=D // put return address into R10
+@LTA
+(quickSort$LTARTAddr2)
+@R15 // take the return value
+D=!M // !LTA(L, G)
+@quickSort$LoopLLTGESC
+D;JEQ
+
+(quickSort$LoopL)
+// call LTV(L, P)
+@LCL
+A=M
+D=M
+@R13
+M=D // put L into R13
+
+@LCL
+A=M+1
+A=A+1
+D=M
+@R14
+M=D // put P into R14
+@quickSort$LTVRTAddr
+D=A
+@R10
+M=D // put return address into R10
+@LTA
+(quickSort$LTVRTAddr)
+@R15 // take the return value
+D=!M // !LTV(L, G)
+@quickSort$LoopLESC
+D;JEQ
+
+@LCL // L at Local[0]
+A=M
+M=M+1 // L = L + 1;
+@quickSort$LoopL
+0;JMP
+
+(quickSort$LoopLESC) // #146
+
+(quickSort$LoopG)
+// call GTV(G, P)
+@LCL
+A=M+1
+D=M
+@R13
+M=D // put G into R13
+
+@LCL
+A=M+1
+A=A+1
+D=M
+@R14
+M=D // put P into R14
+@quickSort$GTVRTAddr
+D=A
+@R10
+M=D // put return address into R10
+@GTV
+(quickSort$GTVRTAddr)
+@R15 // take the return value
+D=!M // !LTV(L, G)
+@quickSort$LoopGESC
+D;JEQ
+
+@LCL
+A=M+1
+M=M-1 // G = G - 1;
+@quickSort$LoopG
+0;JMP
+(quickSort$LoopGESC)
+
+// call LTA(L,G) #155
+@LCL
+A=M
+D=M
+@R13
+M=D // put L into R13
+
+@LCL
+A=M+1
+D=M
+@R14
+M=D // put G into R14
+@quickSort$LTARTAddr3
+D=A
+@R10
+M=D // put return address into R10
+@LTA
+(quickSort$LTARTAddr3)
+@R15 // take the return value
+D=!M // !LTA(L, G)
+@quickSort$SkipSwapLG
+D;JEQ
+
+// call swapV(L, G) #157
 
 
+(quickSort$SkipSwapLG)
 
+(quickSort$LoopLLTGESC) //163
+// call GTV(L, P)
+@LCL
+A=M
+D=M
+@R13
+M=D // put L into R13
 
+@LCL
+A=M+1
+A=A+1
+D=M
+@R14
+M=D // put P into R14
+@quickSort$GTVRTAddr3
+D=A
+@R10
+M=D // put return address into R10
+@GTV
+(quickSort$GTVRTAddr3)
+@R15 // take the return value
+D=!M // !LTV(L, G)
+@quickSort$Recur
+D;JEQ
 
+(quickSort$PutPPos)
+// call swapV(L, G) #167
+@LCL
+A=M
+D=M // L
+@R13
+M=D
 
+@LCL
+A=M+1
+A=A+1
+D=M // P
+@R14
+M=D
 
+@quickSort$swapVPGRTA2
+D=A
+@R10
+M=D // return address in R10
 
+@swapV
+0;JMP
 
+(quickSort$swapVPGRTA2)
 
+(quickSort$Recur) //#169
 
+// save the current function stack and do recursive call
 
+// @quickSort
+// 0;JMP
+(quickSort$RecurAddr1)
+(quickSort$RecurAddr2)
 
 (quickSort$return)
 @ARG

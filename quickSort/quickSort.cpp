@@ -132,7 +132,7 @@ quickSort$squeeze_break:
     G = subend;   // arr starts from 0
     swapV(P, G);  // put the pivoit out of the way, to the end
     P = subend;   // now the Pivoit is at arr[end]
-    G--;
+    G = G - 1;
 
 quickSort$LoopLLTG:
     if (!LTA(L, G))
